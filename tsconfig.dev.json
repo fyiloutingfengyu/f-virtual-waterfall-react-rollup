@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "demo/dist",
     "module": "esnext",
     "target": "esnext",
     "declaration": true,
@@ -15,11 +15,6 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
     "moduleResolution": "node"
   },
   "exclude": [

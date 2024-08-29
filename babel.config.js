@@ -3,7 +3,7 @@ export default {
     [
       '@babel/preset-env',
       {
-        modules: 'auto' // 默认值为“auto”,babel会根据目标环境决定是否对模块进行转译
+        modules: false // 默认值为“auto”,babel会根据目标环境决定是否对模块进行转译
       }
     ],
     '@babel/preset-react',

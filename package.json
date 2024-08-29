@@ -1,11 +1,11 @@
 {
   "name": "f-virtual-waterfall-react-rollup",
   "version": "1.0.0",
-  "main": "index.js",
+  "module": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "rollup -c --environment NODE_ENV:development -w",
-    "build": "rollup -c --environment NODE_ENV:production"
+    "dev": "rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
+    "build": "rollup -c build/rollup.config.prod.js --environment NODE_ENV:production"
   },
   "license": "MIT",
   "devDependencies": {
@@ -20,8 +20,10 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-eslint": "^9.0.5",
+    "@rollup/plugin-html": "^1.0.3",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^22.5.0",
@@ -41,5 +43,16 @@
     "sass": "^1.77.8",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4"
-  }
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8",
+    "iOS >= 8",
+    "Firefox >= 20",
+    "Android > 4.4"
+  ]
 }
