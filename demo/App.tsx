@@ -11,34 +11,6 @@ import VirtualWaterfall from '../src/index';
 import { testData } from './test/data';
 import styles from './index.module.scss';
 
-console.log(5, 'process.env.IS_DIST');
-console.log(55, process.env.IS_DIST);
-
-// todo f
-/*let VirtualWaterfall: any;
-
-if (process.env.IS_DIST) {
-  console.log();
-  import('../dist/index')
-    .then(module => {
-      console.log(module.default);
-      VirtualWaterfall = module.default;
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  import('../dist/main.css');
-} else {
-  import('../src/index')
-    .then(module => {
-      console.log(module.default);
-      VirtualWaterfall = module.default;
-    })
-    .catch(err => {
-      console.error(err);
-    });
-}*/
-
 function App() {
   const pageSize = 20;
 

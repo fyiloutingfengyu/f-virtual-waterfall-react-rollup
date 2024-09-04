@@ -40911,32 +40911,6 @@
 
 	var styles = {"appBaseLayout":"index-module_appBaseLayout__liUEj","loadingText":"index-module_loadingText__j4ccW"};
 
-	console.log(5, 'undefined');
-	console.log(55, undefined);
-	// todo f
-	/*let VirtualWaterfall: any;
-
-	if (undefined) {
-	  console.log();
-	  import('../dist/index')
-	    .then(module => {
-	      console.log(module.default);
-	      VirtualWaterfall = module.default;
-	    })
-	    .catch(err => {
-	      console.error(err);
-	    });
-	  import('../dist/main.css');
-	} else {
-	  import('../src/index')
-	    .then(module => {
-	      console.log(module.default);
-	      VirtualWaterfall = module.default;
-	    })
-	    .catch(err => {
-	      console.error(err);
-	    });
-	}*/
 	function App() {
 	  var pageSize = 20;
 	  // 模拟从后台获取数据
