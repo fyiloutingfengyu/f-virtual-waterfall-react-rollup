@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
+    "dev-dist": "rollup -c build/rollup.config.dev.js --environment NODE_ENV:development,IS_DIST -w",
     "build": "rollup -c build/rollup.config.prod.js --environment NODE_ENV:production"
   },
   "license": "MIT",
@@ -31,12 +32,15 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.2.0",
     "@typescript-eslint/parser": "^8.2.0",
+    "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",
     "postcss-modules": "^6.0.0",
+    "postcss-px-to-viewport-8-plugin": "^1.2.5",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rollup": "^4.21.0",
+    "rollup-plugin-clear-f": "^1.0.0",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-serve": "^1.1.1",

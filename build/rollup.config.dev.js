@@ -10,7 +10,10 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
 
+const isDist = process.env.IS_DIST;
 const templateHtml = readFileSync('./demo/template.html', 'utf8');
+
+console.log('isDist1',process.env.IS_DIST);
 
 const config = {
   input: './demo/index.tsx',
@@ -30,15 +33,16 @@ const config = {
       babelHelpers: 'runtime'
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('development')
+      preventAssignment: true,
+      // 'process.env.NODE_ENV': JSON.stringify('development'),
+      // 'process.env.IS_DIST': process.env.IS_DIST
     }),
     html({
       fileName: 'index.html',
       template: () => templateHtml,
     }),
     postcss({
-      // todo f 动态切换
-      // modules: true,
+      modules: !isDist,
       extract: path.resolve('demo/dist/common.css'),
     }),
     // todo f

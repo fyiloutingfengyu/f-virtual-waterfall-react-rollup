@@ -1,19 +1,21 @@
 import React from 'react';
-// 直接使用这里的需要把 rollup.config.dev.js中的 postcss modules设置为true
-// import VirtualWaterfall from '../src/index';
+// 预览调试打包前的源码需要把 rollup.config.dev.js中的 postcss modules设置为true
+import VirtualWaterfall from '../src/index';
 
 // 测试打包后的组件用下面的, postcss modules设置为false
-import VirtualWaterfall from '../dist/index';
-import '../dist/main.css';
+// import VirtualWaterfall from '../dist/index';
+// import '../dist/main.css';
 
 import { testData } from './test/data';
 import styles from './index.module.scss';
+
+console.log(33, 'process.env.IS_DIST');
 
 function App() {
   const pageSize = 20;
 
   // 模拟从后台获取数据
-  const getList = (start) => {
+  const getList = (start: number) => {
     // todo f 这里是模拟数据请求，需要改成真实的从后台接口获取数据
     return new Promise(resolve => {
       const nextList = testData.slice(start, start + pageSize);

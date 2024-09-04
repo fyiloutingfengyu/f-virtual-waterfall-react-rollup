@@ -3,6 +3,7 @@
     "outDir": "demo/dist",
     "module": "esnext",
     "target": "esnext",
+//    "strict": true,
     "declaration": true,
     // todo f
     "lib": [
@@ -18,7 +19,8 @@
     "moduleResolution": "node"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./demo/dist"
   ],
   "include": [
     "./src/**/*",

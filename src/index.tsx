@@ -30,13 +30,13 @@ const VirtualWaterfall = (
     // 每一项的样式, 这里默认值如果是非空对象TS会报类型错误
     waterfallItemStyle = {},
     // 获取数据的方法
-    getList = (startIndex) => {
+    getList = (startIndex: number) => {
       return new Promise(resolve => {
         resolve([]);
       });
     },
     // 要渲染的内容
-    renderItemContent = (item) => {
+    renderItemContent = (item: any) => {
       return <>
         <div
           className={styles.imgBox}
@@ -60,7 +60,7 @@ const VirtualWaterfall = (
   }
 ) => {
   const designWidth = 750;
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef(null);
   // 当前渲染的页码，从1开始
   const page = useRef(1);
@@ -90,7 +90,10 @@ const VirtualWaterfall = (
   const lastScrollNumY = useRef(0);
   const canvas = document.createElement('canvas');
   const getTextBoxHeightCtx = canvas.getContext('2d');
-  getTextBoxHeightCtx.font = textFont;
+
+  if (getTextBoxHeightCtx) {
+    getTextBoxHeightCtx.font = textFont;
+  }
 
   useEffect(() => {
     init();
@@ -99,11 +102,13 @@ const VirtualWaterfall = (
   useEffect(() => {
     let containerDom = containerRef.current;
 
-    containerDom.addEventListener('scroll', handleScroll);
+    if (containerDom) {
+      containerDom.addEventListener('scroll', handleScroll);
 
-    return () => {
-      containerDom.removeEventListener('scroll', handleScroll);
-    };
+      return () => {
+        containerDom.removeEventListener('scroll', handleScroll);
+      };
+    }
   }, []);
 
   // 初始化数据

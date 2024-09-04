@@ -8,7 +8,8 @@ import json from '@rollup/plugin-json';
 import postcss from 'rollup-plugin-postcss';
 import modules from 'postcss-modules';
 import path from 'path';
-import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
+// import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
+import fRollupClear from 'rollup-plugin-clear-f';
 
 // const isDev = process.env.NODE_ENV === 'development';
 
