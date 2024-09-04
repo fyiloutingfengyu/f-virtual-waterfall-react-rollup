@@ -13,8 +13,6 @@ import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
 const isDist = process.env.IS_DIST;
 const templateHtml = readFileSync('./demo/template.html', 'utf8');
 
-console.log('isDist1',process.env.IS_DIST);
-
 const config = {
   input: './demo/index.tsx',
   output: {
@@ -34,8 +32,8 @@ const config = {
     }),
     replace({
       preventAssignment: true,
-      // 'process.env.NODE_ENV': JSON.stringify('development'),
-      // 'process.env.IS_DIST': process.env.IS_DIST
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      'process.env.IS_DIST': process.env.IS_DIST
     }),
     html({
       fileName: 'index.html',

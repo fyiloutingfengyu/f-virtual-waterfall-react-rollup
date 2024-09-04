@@ -6,6 +6,27 @@ import PropTypes from 'prop-types';
 import { getDataType, pxToVW, throttle } from './utils/common';
 import styles from './virtual-waterfall.module.scss';
 
+interface ColumnHeightItem {
+  index: number;
+  height: number;
+}
+
+interface DomeDataItem {
+  index: number;
+  columnIndex: number;
+  width: number;
+  height: number;
+  imgBoxHeight: number;
+  left: number;
+  top: number;
+  text: string;
+  textBoxHeight: number;
+}
+
+interface RenderMap {
+  [key: string | number]: DomeDataItem;
+}
+
 // 按750设计稿下的尺寸和字体大小
 const VirtualWaterfall = (
   {
@@ -61,20 +82,20 @@ const VirtualWaterfall = (
 ) => {
   const designWidth = 750;
   const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   // 当前渲染的页码，从1开始
   const page = useRef(1);
   const hasNextPage = useRef(true);
   // 每列的宽度
   const columnWidth = useRef(0);
   // 对后台数据进行处理后的数据，增加了定位信息,存放总的数据
-  const domDataList = useRef([]);
+  const domDataList = useRef<DomeDataItem[]>([]);
   // 每列的高度列表
-  const columnHeightList = useRef([]);
+  const columnHeightList = useRef<ColumnHeightItem[]>([]);
   // 存放当前被渲染出来的元素
-  const renderMap = useRef({});
+  const renderMap = useRef<RenderMap>({});
   // 更新页面视图的渲染列表,有renderMap的values组成的数组
-  const [renderList, setRenderList] = useState([]);
+  const [renderList, setRenderList] = useState<DomeDataItem[]>([]);
   // 当前被渲染出来的元素的开头位置的下标
   const startIndex = useRef(0);
   // 当前被渲染出来的元素的结尾位置的下标
@@ -139,7 +160,7 @@ const VirtualWaterfall = (
 
   // 重置每列高度列表
   const resetColumnHeightList = () => {
-    let tempList = [];
+    let tempList: ColumnHeightItem[] = [];
 
     for (let i = 0; i < columnNumber; i++) {
       tempList.push({
@@ -154,13 +175,16 @@ const VirtualWaterfall = (
   // 设置瀑布流内容容器的高度
   const setContentHeight = () => {
     columnHeightList.current.sort((a, b) => a.height - b.height);
-    // 瀑布流列表区域的高度为最高的列的高度
-    contentRef.current.style.height = pxToVW(columnHeightList.current[columnHeightList.current.length - 1].height + loadingBoxHeight);
+
+    if (contentRef.current) {
+      // 瀑布流列表区域的高度为最高的列的高度
+      contentRef.current.style.height = pxToVW(columnHeightList.current[columnHeightList.current.length - 1].height + loadingBoxHeight);
+    }
   };
 
   // 对后台请求回来的数据进行处理，生成带位置信息的数据
-  const computedDomData = (list, startRenderIndex = 0) => {
-    const tempDomDataList = [];
+  const computedDomData = (list: any[], startRenderIndex = 0) => {
+    const tempDomDataList: DomeDataItem[] = [];
 
     for (let i = 0, len = list.length; i < len; i++) {
       let imgHeight = Math.ceil(columnWidth.current * list[i].h / list[i].w);
@@ -187,7 +211,12 @@ const VirtualWaterfall = (
       item.left = (item.columnIndex - 1) * (gapX + columnWidth.current);
       item.top = columnHeightList.current[0].height;
 
-      const textWidth = getTextBoxHeightCtx.measureText(item.text).width;
+      let textWidth = 0;
+
+      if (getTextBoxHeightCtx) {
+        textWidth = getTextBoxHeightCtx.measureText(item.text).width;
+      }
+
       const rows = Math.ceil((textWidth + textBoxParams.paddingLeft + textBoxParams.paddingRight) / columnWidth.current);
 
       if (rows >= textBoxParams.maxRows) {
@@ -207,22 +236,34 @@ const VirtualWaterfall = (
   };
 
   // 将750设计稿对应的尺寸转为当前容器视口下的大小
-  const getSizeByViewport = (size) => {
-    return containerRef.current.offsetWidth / (designWidth / size);
+  const getSizeByViewport = (size: number) => {
+    let containerWidth = 375;
+
+    if (containerRef.current) {
+      containerWidth = containerRef.current.offsetWidth;
+    }
+
+    return containerWidth / (designWidth / size);
   };
 
   // 获取当前元素的边界信息
-  const getBoundaryInfo = (item) => {
+  const getBoundaryInfo = (item: DomeDataItem) => {
     const { top, height } = item;
     const newContainerOffset = getSizeByViewport(containerOffset);
 
     // 当前元素的底部的位置
     const y = getSizeByViewport(top + height + containerTop);
-    // 向上扩展半屏
-    const topLine = containerRef.current.scrollTop - newContainerOffset;
 
-    // 向下扩展半屏
-    const bottomLine = containerRef.current.scrollTop + containerRef.current.offsetHeight + newContainerOffset;
+    let topLine = -newContainerOffset;
+    let bottomLine = newContainerOffset;
+
+    if (containerRef.current) {
+      // 向上扩展半屏
+      topLine = containerRef.current.scrollTop - newContainerOffset;
+
+      // 向下扩展半屏
+      bottomLine = containerRef.current.scrollTop + containerRef.current.offsetHeight + newContainerOffset;
+    }
 
     // 是否在上线之上
     const isOverTopLine = topLine > y;
@@ -237,7 +278,7 @@ const VirtualWaterfall = (
   };
 
   // 渲染每一个模块
-  const renderItem = (item) => {
+  const renderItem = (item: DomeDataItem) => {
     return (
       <div
         className={styles.waterfallItem}
@@ -263,7 +304,7 @@ const VirtualWaterfall = (
   const renderDomByDataList = (startRenderIndex = 0) => {
     if (!domDataList.current.length) return;
 
-    const tempRenderMap = {};
+    const tempRenderMap: RenderMap = {};
 
     // 渲染上线边界之间的元素
     // 从当前渲染出来的元素的起始位置开始遍历，直到总数据的结尾
@@ -295,21 +336,30 @@ const VirtualWaterfall = (
     endIndex.current = +keys[keys.length - 1];
 
     if (renderMap.current) {
+      // todo f
       setRenderList(Object.values(renderMap.current));
     }
   };
 
   // 处理容器滚动事件
   const handleScroll = throttle(async () => {
-    scrollDirection.current = containerRef.current.scrollTop - lastScrollNumY.current > 0 ? 1 : -1;
-    lastScrollNumY.current = containerRef.current.scrollTop;
+    let scrollTop = 0;
+    let offsetHeight = 0;
+
+    if (containerRef.current) {
+      scrollTop = containerRef.current.scrollTop;
+      offsetHeight = containerRef.current.offsetHeight;
+    }
+
+    scrollDirection.current = scrollTop - lastScrollNumY.current > 0 ? 1 : -1;
+    lastScrollNumY.current = scrollTop;
 
     updateDomPosition(scrollDirection.current);
 
     if (isLoadingNextPage.current || !hasNextPage.current) return;
 
     // 当已经展示出来的内容高度大于当前数据内容总高度的85%的时候开始加载新数据
-    if (containerRef.current.scrollTop + containerRef.current.offsetHeight >= containerRef.current.scrollHeight * 0.85) {
+    if (scrollTop + offsetHeight >= offsetHeight * 0.85) {
       isLoadingNextPage.current = true;
       setIsShowLoading(true);
 
@@ -341,8 +391,8 @@ const VirtualWaterfall = (
   }, 150);
 
   // 页面滚动时，更新渲染的数据列表
-  const updateDomPosition = (direction) => {
-    const tempRenderMap = {};
+  const updateDomPosition = (direction: number) => {
+    const tempRenderMap: RenderMap = {};
 
     // 检查现有列表中的元素，不在渲染区域内的元素删除,渲染区域内的保留
     for (let i = startIndex.current; i <= endIndex.current; i++) {

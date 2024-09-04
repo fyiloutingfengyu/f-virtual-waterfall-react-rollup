@@ -1,15 +1,43 @@
 import React from 'react';
 // 预览调试打包前的源码需要把 rollup.config.dev.js中的 postcss modules设置为true
+// 使用 yarn dev 命令来构建项目
 import VirtualWaterfall from '../src/index';
 
 // 测试打包后的组件用下面的, postcss modules设置为false
+// 使用 yarn dev-dist 命令来构建项目
 // import VirtualWaterfall from '../dist/index';
 // import '../dist/main.css';
 
 import { testData } from './test/data';
 import styles from './index.module.scss';
 
-console.log(33, 'process.env.IS_DIST');
+console.log(5, 'process.env.IS_DIST');
+console.log(55, process.env.IS_DIST);
+
+// todo f
+/*let VirtualWaterfall: any;
+
+if (process.env.IS_DIST) {
+  console.log();
+  import('../dist/index')
+    .then(module => {
+      console.log(module.default);
+      VirtualWaterfall = module.default;
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  import('../dist/main.css');
+} else {
+  import('../src/index')
+    .then(module => {
+      console.log(module.default);
+      VirtualWaterfall = module.default;
+    })
+    .catch(err => {
+      console.error(err);
+    });
+}*/
 
 function App() {
   const pageSize = 20;

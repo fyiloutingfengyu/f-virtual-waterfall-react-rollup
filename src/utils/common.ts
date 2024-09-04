@@ -1,8 +1,10 @@
+import { FunctionType } from '../types/common';
+
 /**
  * 获取数据类型
  * @param data
  */
-export const getDataType = (data) => {
+export const getDataType = (data: any) => {
   const type = typeof data;
 
   if (data === null) {
@@ -21,7 +23,7 @@ export const getDataType = (data) => {
  * px 转 vw
  * @param px
  */
-export const pxToVW = (px) => {
+export const pxToVW = (px: number) => {
   return `${px / (750 / 100)}vw`;
 };
 
@@ -32,7 +34,7 @@ export const pxToVW = (px) => {
  * @param time
  * @param immediate
  */
-export const throttle = (callback, time, immediate = false) => {
+export const throttle = (callback: FunctionType, time: number, immediate = false) => {
   if (immediate) {
     let prevTime = 0;
 

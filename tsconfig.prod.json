@@ -3,7 +3,9 @@
     "outDir": "./dist",
     "module": "esnext",
     "target": "esnext",
-//    "strict": true,
+    "strict": true,
+    // 允许 this 有隐式的 any 类型
+    "noImplicitThis": false,
     "declaration": true,
     // todo f
     "lib": [
