@@ -2,7 +2,7 @@
  * 上图下文瀑布流组件
  */
 import React, { useRef, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { getDataType, pxToVW, throttle } from './utils/common';
 import styles from './virtual-waterfall.module.scss';
 
@@ -51,13 +51,14 @@ const VirtualWaterfall = (
     // 每一项的样式, 这里默认值如果是非空对象TS会报类型错误
     waterfallItemStyle = {},
     // 获取数据的方法
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getList = (startIndex: number) => {
       return new Promise(resolve => {
         resolve([]);
       });
     },
     // 要渲染的内容
-    renderItemContent = (item: any) => {
+    renderItemContent = (item: DomeDataItem) => {
       return <>
         <div
           className={styles.imgBox}
@@ -121,7 +122,7 @@ const VirtualWaterfall = (
   }, []);
 
   useEffect(() => {
-    let containerDom = containerRef.current;
+    const containerDom = containerRef.current;
 
     if (containerDom) {
       containerDom.addEventListener('scroll', handleScroll);
@@ -135,7 +136,6 @@ const VirtualWaterfall = (
   // 初始化数据
   const init = async () => {
     // 获取列表数据
-    // todo f
     const list: any = await getList((page.current - 1) * pageSize);
 
     if (getDataType(list) === 'array') {
@@ -160,7 +160,7 @@ const VirtualWaterfall = (
 
   // 重置每列高度列表
   const resetColumnHeightList = () => {
-    let tempList: ColumnHeightItem[] = [];
+    const tempList: ColumnHeightItem[] = [];
 
     for (let i = 0; i < columnNumber; i++) {
       tempList.push({
@@ -187,7 +187,7 @@ const VirtualWaterfall = (
     const tempDomDataList: DomeDataItem[] = [];
 
     for (let i = 0, len = list.length; i < len; i++) {
-      let imgHeight = Math.ceil(columnWidth.current * list[i].h / list[i].w);
+      const imgHeight = Math.ceil(columnWidth.current * list[i].h / list[i].w);
 
       const item = {
         // 是下标也是唯一标识，可以用作ID
@@ -375,6 +375,7 @@ const VirtualWaterfall = (
           hasNextPage.current = !!list.length;
         }
       } catch (err) {
+        console.log(err);
         isLoadingNextPage.current = false;
         setIsShowLoading(false);
       }
@@ -475,7 +476,7 @@ const VirtualWaterfall = (
   );
 };
 
-VirtualWaterfall.prototype = {
+/*VirtualWaterfall.prototype = {
   gapX: PropTypes.number,
   gapY: PropTypes.number,
   pageSize: PropTypes.number,
@@ -489,7 +490,7 @@ VirtualWaterfall.prototype = {
   waterfallItemStyle: PropTypes.object,
   renderContent: PropTypes.func,
   getList: PropTypes.func
-};
+};*/
 
 export default VirtualWaterfall;
 

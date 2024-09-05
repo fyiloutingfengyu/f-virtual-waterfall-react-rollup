@@ -1,0 +1,31 @@
+# f-virtual-waterfall-react-rollup
+
+## Installation
+```
+npm install f-virtual-waterfall-react-rollup --save-dev
+```
+
+## Usage
+```
+import VirtualWaterfall from 'f-virtual-waterfall-react-rollup';
+import '../dist/main.css';
+```
+
+```
+// 从后台获取数据
+  const getList = (start: number) => {
+    return new Promise(resolve => {
+      // 从后台接口获取的数据
+      const demoData = [];
+      resolve(demoData);
+    });
+  };
+  
+  <VirtualWaterfall
+        loadingBoxHeight={100}
+        getList={getList}
+        loadingContent={() => (
+          <div className={styles.loadingText}>加载中...</div>
+        )}
+  />
+```

@@ -1,7 +1,6 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
-import eslint from '@rollup/plugin-eslint';
 import { babel } from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
@@ -10,8 +9,6 @@ import modules from 'postcss-modules';
 import path from 'path';
 // import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
 import fRollupClear from 'rollup-plugin-clear-f';
-
-// const isDev = process.env.NODE_ENV === 'development';
 
 export default {
   input: 'src/index.tsx',
@@ -36,7 +33,7 @@ export default {
       extract: path.resolve('dist/main.css'),
       minimize: true,
       plugins: [
-        // todo f 加了这段代码后会生成 xxx.module.scss.json文件，
+        // 加了这段代码后会生成 xxx.module.scss.json文件，
         /* modules({
            generateScopedName: '[name]_[local]_[hash:base64:5]'
          })*/
@@ -47,7 +44,6 @@ export default {
     // todo f
     typescript({ tsconfig: './tsconfig.prod.json' }),
     // json(),
-    // eslint(),
     // todo f
     babel({
       // exclude: 'node_modules/**',

@@ -6,6 +6,7 @@ import postcss from 'rollup-plugin-postcss';
 import serve from 'rollup-plugin-serve';
 import html from '@rollup/plugin-html';
 import replace from '@rollup/plugin-replace';
+import eslint from '@rollup/plugin-eslint';
 import { readFileSync } from 'fs';
 import path from 'path';
 import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
@@ -25,6 +26,7 @@ const config = {
     nodeResolve(),
     commonjs(),
     typescript({ tsconfig: './tsconfig.dev.json' }),
+    eslint(),
     babel({
       exclude: 'node_modules/**',
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -43,7 +45,6 @@ const config = {
       modules: !isDist,
       extract: path.resolve('demo/dist/common.css'),
     }),
-    // todo f
     serve({
       open: false,
       openPage: 'index.html',
