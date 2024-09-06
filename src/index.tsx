@@ -28,59 +28,57 @@ interface RenderMap {
 }
 
 // 按750设计稿下的尺寸和字体大小
-const VirtualWaterfall = (
-  {
-    gapX = 16, // 两列水平方向的间距
-    gapY = 16, // 两列垂直方向的间距
-    pageSize = 20, // 每页请求回来的数据条数
-    columnNumber = 2, // 展示的列数
-    containerHeight = '100vh', // 外层包裹容器的高度
-    containerTop = 0, // 外层包裹容器的top属性或margin-top的值
-    containerPadding = 20, // 外层包裹容器的左右padding值
-    textFont = '16px sans-serif', // 文本的字体
-    loadingBoxHeight = 60, // 底部加载中盒子高度
-    // 传入的值需要和样式文件中的值保持一致
-    textBoxParams = {
-      paddingLeft: 10,
-      paddingRight: 10,
-      marginTop: 10,
-      marginBottom: 10,
-      lineHeight: 24,
-      maxRows: 2
-    },
-    // 每一项的样式, 这里默认值如果是非空对象TS会报类型错误
-    waterfallItemStyle = {},
-    // 获取数据的方法
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getList = (startIndex: number) => {
-      return new Promise(resolve => {
-        resolve([]);
-      });
-    },
-    // 要渲染的内容
-    renderItemContent = (item: DomeDataItem) => {
-      return <>
+const VirtualWaterfall = ({
+  gapX = 16, // 两列水平方向的间距
+  gapY = 16, // 两列垂直方向的间距
+  pageSize = 20, // 每页请求回来的数据条数
+  columnNumber = 2, // 展示的列数
+  containerHeight = '100vh', // 外层包裹容器的高度
+  containerTop = 0, // 外层包裹容器的top属性或margin-top的值
+  containerPadding = 20, // 外层包裹容器的左右padding值
+  textFont = '16px sans-serif', // 文本的字体
+  loadingBoxHeight = 60, // 底部加载中盒子高度
+  // 传入的值需要和样式文件中的值保持一致
+  textBoxParams = {
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    lineHeight: 24,
+    maxRows: 2
+  },
+  // 每一项的样式, 这里默认值如果是非空对象TS会报类型错误
+  waterfallItemStyle = {},
+  // 获取数据的方法
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getList = (startIndex: number) => {
+    return new Promise((resolve) => {
+      resolve([]);
+    });
+  },
+  // 要渲染的内容
+  renderItemContent = (item: DomeDataItem) => {
+    return (
+      <>
         <div
           className={styles.imgBox}
-          style={
-            {
-              height: pxToVW(item.imgBoxHeight)
-            }
-          }
+          style={{
+            height: pxToVW(item.imgBoxHeight)
+          }}
         >
           <span className={styles.idx}>{item.index}</span>
         </div>
-        <div className={`${styles.textBox} ${styles.multiEllipsisL2}`}>{item.text}</div>
-      </>;
-    },
-    // 加载中样式展示
-    loadingContent = () => {
-      return (
-        <div className={styles.loadingText}>加载中...</div>
-      );
-    }
+        <div className={`${styles.textBox} ${styles.multiEllipsisL2}`}>
+          {item.text}
+        </div>
+      </>
+    );
+  },
+  // 加载中样式展示
+  loadingContent = () => {
+    return <div className={styles.loadingText}>加载中...</div>;
   }
-) => {
+}) => {
   const designWidth = 750;
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -155,7 +153,8 @@ const VirtualWaterfall = (
   const computedColumnWidth = () => {
     const allGapWidth = gapX * (columnNumber - 1);
 
-    columnWidth.current = (designWidth - allGapWidth - containerPadding * 2) / columnNumber;
+    columnWidth.current =
+      (designWidth - allGapWidth - containerPadding * 2) / columnNumber;
   };
 
   // 重置每列高度列表
@@ -178,7 +177,10 @@ const VirtualWaterfall = (
 
     if (contentRef.current) {
       // 瀑布流列表区域的高度为最高的列的高度
-      contentRef.current.style.height = pxToVW(columnHeightList.current[columnHeightList.current.length - 1].height + loadingBoxHeight);
+      contentRef.current.style.height = pxToVW(
+        columnHeightList.current[columnHeightList.current.length - 1].height +
+          loadingBoxHeight
+      );
     }
   };
 
@@ -187,7 +189,9 @@ const VirtualWaterfall = (
     const tempDomDataList: DomeDataItem[] = [];
 
     for (let i = 0, len = list.length; i < len; i++) {
-      const imgHeight = Math.ceil(columnWidth.current * list[i].h / list[i].w);
+      const imgHeight = Math.ceil(
+        (columnWidth.current * list[i].h) / list[i].w
+      );
 
       const item = {
         // 是下标也是唯一标识，可以用作ID
@@ -201,7 +205,10 @@ const VirtualWaterfall = (
         left: 0,
         top: 0,
         text: list[i].text,
-        textBoxHeight: textBoxParams.lineHeight + textBoxParams.marginTop + textBoxParams.marginBottom
+        textBoxHeight:
+          textBoxParams.lineHeight +
+          textBoxParams.marginTop +
+          textBoxParams.marginBottom
       };
 
       // 将当前数据放入高度最短的列
@@ -217,10 +224,15 @@ const VirtualWaterfall = (
         textWidth = getTextBoxHeightCtx.measureText(item.text).width;
       }
 
-      const rows = Math.ceil((textWidth + textBoxParams.paddingLeft + textBoxParams.paddingRight) / columnWidth.current);
+      const rows = Math.ceil(
+        (textWidth + textBoxParams.paddingLeft + textBoxParams.paddingRight) /
+          columnWidth.current
+      );
 
       if (rows >= textBoxParams.maxRows) {
-        item.textBoxHeight = item.textBoxHeight + textBoxParams.lineHeight * (textBoxParams.maxRows - 1);
+        item.textBoxHeight =
+          item.textBoxHeight +
+          textBoxParams.lineHeight * (textBoxParams.maxRows - 1);
       }
 
       item.height += item.textBoxHeight;
@@ -262,7 +274,10 @@ const VirtualWaterfall = (
       topLine = containerRef.current.scrollTop - newContainerOffset;
 
       // 向下扩展半屏
-      bottomLine = containerRef.current.scrollTop + containerRef.current.offsetHeight + newContainerOffset;
+      bottomLine =
+        containerRef.current.scrollTop +
+        containerRef.current.offsetHeight +
+        newContainerOffset;
     }
 
     // 是否在上线之上
@@ -284,18 +299,14 @@ const VirtualWaterfall = (
         className={styles.waterfallItem}
         id={`item_${item.index}`}
         key={item.index}
-        style={
-          {
-            width: pxToVW(item.width),
-            height: pxToVW(item.height),
-            transform: `translate(${pxToVW(item.left)}, ${pxToVW(item.top)})`,
-            ...waterfallItemStyle
-          }
-        }
+        style={{
+          width: pxToVW(item.width),
+          height: pxToVW(item.height),
+          transform: `translate(${pxToVW(item.left)}, ${pxToVW(item.top)})`,
+          ...waterfallItemStyle
+        }}
       >
-        {
-          renderItemContent(item)
-        }
+        {renderItemContent(item)}
       </div>
     );
   };
@@ -308,9 +319,15 @@ const VirtualWaterfall = (
 
     // 渲染上线边界之间的元素
     // 从当前渲染出来的元素的起始位置开始遍历，直到总数据的结尾
-    for (let i = startRenderIndex, len = domDataList.current.length; i < len; i++) {
+    for (
+      let i = startRenderIndex, len = domDataList.current.length;
+      i < len;
+      i++
+    ) {
       const { index } = domDataList.current[i];
-      const { isOverTopLine, isUnderBottomLine } = getBoundaryInfo(domDataList.current[i]);
+      const { isOverTopLine, isUnderBottomLine } = getBoundaryInfo(
+        domDataList.current[i]
+      );
 
       // 移除渲染区域之外的元素,并跳出本次循环
       if (isOverTopLine) {
@@ -336,7 +353,6 @@ const VirtualWaterfall = (
     endIndex.current = +keys[keys.length - 1];
 
     if (renderMap.current) {
-      // todo f
       setRenderList(Object.values(renderMap.current));
     }
   };
@@ -366,7 +382,6 @@ const VirtualWaterfall = (
       // page 加1，获取下一页数据
       page.current += 1;
 
-      // todo f
       let list: any = [];
 
       try {
@@ -397,7 +412,9 @@ const VirtualWaterfall = (
 
     // 检查现有列表中的元素，不在渲染区域内的元素删除,渲染区域内的保留
     for (let i = startIndex.current; i <= endIndex.current; i++) {
-      const { isOverTopLine, isUnderBottomLine } = getBoundaryInfo(domDataList.current[i]);
+      const { isOverTopLine, isUnderBottomLine } = getBoundaryInfo(
+        domDataList.current[i]
+      );
 
       if (isOverTopLine || isUnderBottomLine) {
         continue;
@@ -447,31 +464,20 @@ const VirtualWaterfall = (
     <div
       ref={containerRef}
       className={styles.waterFallContainer}
-      style={
-        {
-          height: containerHeight,
-          padding: `0 ${pxToVW(containerPadding)}`
-        }
-      }
+      style={{
+        height: containerHeight,
+        padding: `0 ${pxToVW(containerPadding)}`
+      }}
     >
       <div
         ref={contentRef}
         className={styles.contentBox}
       >
-        {
-          renderList.map(item => {
-            return (
-              renderItem(item)
-            );
-          })
-        }
+        {renderList.map((item) => {
+          return renderItem(item);
+        })}
       </div>
-      {
-        isShowLoading ?
-          loadingContent()
-          :
-          null
-      }
+      {isShowLoading ? loadingContent() : null}
     </div>
   );
 };
@@ -493,5 +499,3 @@ const VirtualWaterfall = (
 };*/
 
 export default VirtualWaterfall;
-
-

@@ -34,7 +34,11 @@ export const pxToVW = (px: number) => {
  * @param time
  * @param immediate
  */
-export const throttle = (callback: FunctionType, time: number, immediate = false) => {
+export const throttle = (
+  callback: FunctionType,
+  time: number,
+  immediate = false
+) => {
   if (immediate) {
     let prevTime = 0;
 
