@@ -2,7 +2,11 @@
 
 ## Installation
 ```
-npm install f-virtual-waterfall-react-rollup --save-dev
+npm install f-virtual-waterfall-react-rollup --save
+```
+or 
+```
+yarn add f-virtual-waterfall-react-rollup
 ```
 
 ## Usage
