@@ -4,9 +4,10 @@
   "module": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
-    "dev-dist": "rollup -c build/rollup.config.dev.js --environment NODE_ENV:development,IS_DIST -w",
-    "build": "rollup -c build/rollup.config.prod.js --environment NODE_ENV:production"
+    "style-lint": "stylelint \"./**/*.{css,scss}\"",
+    "dev": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
+    "dev-dist": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development,IS_DIST -w",
+    "build": "yarn style-lint && rollup -c build/rollup.config.prod.js --environment NODE_ENV:production"
   },
   "license": "MIT",
   "devDependencies": {
@@ -50,6 +51,11 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-serve": "^1.1.1",
     "sass": "^1.77.8",
+    "stylelint": "^16.9.0",
+    "stylelint-config-css-modules": "^4.4.0",
+    "stylelint-config-standard": "^36.0.1",
+    "stylelint-order": "^6.0.4",
+    "stylelint-scss": "^6.5.1",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4"
   },
