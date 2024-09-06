@@ -1,12 +1,12 @@
 import React from 'react';
 // 预览调试打包前的源码需要把 rollup.config.dev.js中的 postcss modules设置为true
 // 使用 yarn dev 命令来构建项目
-import VirtualWaterfall from '../src/index';
+// import VirtualWaterfall from '../src/index';
 
 // 测试打包后的组件用下面的, postcss modules设置为false
 // 使用 yarn dev-dist 命令来构建项目
-// import VirtualWaterfall from '../dist/index';
-// import '../dist/main.css';
+import VirtualWaterfall from '../dist/index';
+import '../dist/main.css';
 
 import { testData } from './test/data';
 import styles from './index.module.scss';

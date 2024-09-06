@@ -5,6 +5,7 @@ import { babel } from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import postcss from 'rollup-plugin-postcss';
+import eslint from '@rollup/plugin-eslint';
 import modules from 'postcss-modules';
 import path from 'path';
 // import fRollupClear from '../plugin/f-rollup-plugin-clear.js';
@@ -44,9 +45,8 @@ export default {
     // todo f
     typescript({ tsconfig: './tsconfig.prod.json' }),
     // json(),
-    // todo f
+    eslint(),
     babel({
-      // exclude: 'node_modules/**',
       include: '../src/**',
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       babelHelpers: 'runtime'
