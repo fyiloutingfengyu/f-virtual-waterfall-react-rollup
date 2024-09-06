@@ -7,7 +7,8 @@
     "style-lint": "stylelint \"./**/*.{css,scss}\"",
     "dev": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
     "dev-dist": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development,IS_DIST -w",
-    "build": "yarn style-lint && rollup -c build/rollup.config.prod.js --environment NODE_ENV:production"
+    "build": "yarn style-lint && rollup -c build/rollup.config.prod.js --environment NODE_ENV:production",
+    "prepare": "husky"
   },
   "license": "MIT",
   "devDependencies": {
@@ -19,6 +20,8 @@
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@babel/runtime-corejs3": "^7.25.0",
+    "@commitlint/cli": "^19.4.1",
+    "@commitlint/config-conventional": "^19.4.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-eslint": "^9.0.5",
@@ -38,6 +41,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.35.2",
+    "husky": "^9.1.5",
     "postcss": "^8.4.41",
     "postcss-modules": "^6.0.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.5",
