@@ -5,3 +5,4 @@
 /example/node_modules/
 /demo/dist/demo/
 /demo/dist/src/
+/demo/dist/bundle.js.map

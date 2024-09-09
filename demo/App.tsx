@@ -16,7 +16,7 @@ function App() {
 
   // 模拟从后台获取数据
   const getList = (start: number) => {
-    // todo f 这里是模拟数据请求，需要改成真实的从后台接口获取数据
+    // 这里是模拟数据请求，需要改成真实的从后台接口获取数据
     return new Promise((resolve) => {
       const nextList = testData.slice(start, start + pageSize);
 

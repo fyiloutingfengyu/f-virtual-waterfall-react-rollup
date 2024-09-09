@@ -4,7 +4,6 @@ import path from 'path';
 export default function fRollupClear(options = {}) {
   const outputDir = options.outputDir || 'dist';
 
-  // todo f 完善插件
   return {
     name: 'f-rollup-clear',
     buildStart() {

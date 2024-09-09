@@ -20,7 +20,6 @@ const config = {
     name: 'demoBundle',
     file: './demo/dist/bundle.js',
     format: 'iife',
-    // todo f
     sourcemap: true
   },
   plugins: [

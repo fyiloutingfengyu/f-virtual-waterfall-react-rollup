@@ -8,13 +8,11 @@
     "noImplicitThis": false,
     "declaration": true,
     "noEmit": true,
-    // todo f
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    // todo f
     // "sourceMap": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
