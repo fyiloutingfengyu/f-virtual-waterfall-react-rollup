@@ -19,7 +19,9 @@ const config = {
   output: {
     name: 'demoBundle',
     file: './demo/dist/bundle.js',
-    format: 'iife'
+    format: 'iife',
+    // todo f
+    sourcemap: true
   },
   plugins: [
     fRollupClear({ outputDir: 'demo/dist' }),

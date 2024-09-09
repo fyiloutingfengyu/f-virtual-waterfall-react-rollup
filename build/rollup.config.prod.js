@@ -17,7 +17,6 @@ export default {
     {
       file: 'dist/index.js',
       format: 'es',
-      // sourcemap: true
     },
     /* {
        file: 'dist/index.min.js',
@@ -42,12 +41,11 @@ export default {
     }),
     nodeResolve(),
     commonjs(),
-    // todo f
     typescript({ tsconfig: './tsconfig.prod.json' }),
     // json(),
     eslint(),
     babel({
-      include: '../src/**',
+      include: './src/**/*',
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       babelHelpers: 'runtime'
     }),
