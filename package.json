@@ -1,6 +1,6 @@
 {
   "name": "f-virtual-waterfall-react-rollup",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -12,7 +12,8 @@
     "dev": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development -w",
     "dev-dist": "yarn style-lint && rollup -c build/rollup.config.dev.js --environment NODE_ENV:development,IS_DIST -w",
     "build": "yarn style-lint && rollup -c build/rollup.config.prod.js --environment NODE_ENV:production",
-    "prepare": "husky"
+    "prepare": "husky",
+    "pub": "npm run build && npm publish"
   },
   "license": "MIT",
   "devDependencies": {
