@@ -1,6 +1,6 @@
 {
   "name": "f-virtual-waterfall-react-rollup",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [

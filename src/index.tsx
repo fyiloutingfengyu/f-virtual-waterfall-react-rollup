@@ -3,8 +3,33 @@
  */
 import React, { useRef, useState, useEffect } from 'react';
 // import PropTypes from 'prop-types';
-import { getDataType, pxToVW, throttle } from './utils/common';
+import { pxToVW, throttle } from './utils/common';
+import { ObjectType, FunctionType } from './types/common';
 import styles from './virtual-waterfall.module.scss';
+
+interface VirtualWaterfallProps {
+  gapX?: number;
+  gapY?: number;
+  pageSize?: number;
+  columnNumber?: number;
+  containerHeight?: string | number;
+  containerTop?: number;
+  containerPadding?: number;
+  textFont?: string;
+  loadingBoxHeight?: number;
+  textBoxParams?: {
+    paddingLeft: number;
+    paddingRight: number;
+    marginTop: number;
+    marginBottom: number;
+    lineHeight: number;
+    maxRows: number;
+  };
+  waterfallItemStyle?: ObjectType;
+  getList: FunctionType;
+  renderItemContent?: FunctionType;
+  loadingContent?: FunctionType;
+}
 
 interface ColumnHeightItem {
   index: number;
@@ -28,9 +53,9 @@ interface RenderMap {
 }
 
 // 按750设计稿下的尺寸和字体大小
-const VirtualWaterfall = ({
+const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   gapX = 16, // 两列水平方向的间距
-  gapY = 16, // 两列垂直方向的间距
+  gapY = 16, // 两行垂直方向的间距
   pageSize = 20, // 每页请求回来的数据条数
   columnNumber = 2, // 展示的列数
   containerHeight = '100vh', // 外层包裹容器的高度
@@ -87,13 +112,13 @@ const VirtualWaterfall = ({
   const hasNextPage = useRef(true);
   // 每列的宽度
   const columnWidth = useRef(0);
-  // 对后台数据进行处理后的数据，增加了定位信息,存放总的数据
+  // 对后台数据进行处理后的数据，增加了位置信息,存放总的数据
   const domDataList = useRef<DomeDataItem[]>([]);
   // 每列的高度列表
   const columnHeightList = useRef<ColumnHeightItem[]>([]);
   // 存放当前被渲染出来的元素
   const renderMap = useRef<RenderMap>({});
-  // 更新页面视图的渲染列表,有renderMap的values组成的数组
+  // 更新页面视图的渲染列表,由renderMap的values组成的数组
   const [renderList, setRenderList] = useState<DomeDataItem[]>([]);
   // 当前被渲染出来的元素的开头位置的下标
   const startIndex = useRef(0);
@@ -106,7 +131,7 @@ const VirtualWaterfall = ({
   const [isShowLoading, setIsShowLoading] = useState(false);
   // 页面滚动方向，向下为1 (页面底部追加数据 ↓，滚动条向下移动)，向上为 -1（页面顶部追加数据 ↑，滚动条向上移动）
   const scrollDirection = useRef(1);
-  // 上次滚动距离Y
+  // 垂直方向上上次滚动的距离
   const lastScrollNumY = useRef(0);
   const canvas = document.createElement('canvas');
   const getTextBoxHeightCtx = canvas.getContext('2d');
@@ -136,17 +161,26 @@ const VirtualWaterfall = ({
     // 获取列表数据
     const list: any = await getList((page.current - 1) * pageSize);
 
-    if (getDataType(list) === 'array') {
-      hasNextPage.current = !!list.length;
+    if (Array.isArray(list)) {
+      hasNextPage.current = list.length === pageSize;
     }
     // 计算每列的宽度
     computedColumnWidth();
-    // 重置每列高度
-    resetColumnHeightList();
+    // 初始化每列高度
+    initColumnHeightList();
     // 给后台返回的数据设置位置信息
     computedDomData(list);
     // 渲染元素节点
     renderDomByDataList();
+  };
+
+  // 设置外层容器的高度
+  const setContainerHeight = () => {
+    if (typeof containerHeight === 'string') {
+      return containerHeight;
+    } else {
+      return pxToVW(containerHeight);
+    }
   };
 
   // 设置每列的宽度
@@ -157,8 +191,8 @@ const VirtualWaterfall = ({
       (designWidth - allGapWidth - containerPadding * 2) / columnNumber;
   };
 
-  // 重置每列高度列表
-  const resetColumnHeightList = () => {
+  // 初始化每列高度列表
+  const initColumnHeightList = () => {
     const tempList: ColumnHeightItem[] = [];
 
     for (let i = 0; i < columnNumber; i++) {
@@ -172,7 +206,7 @@ const VirtualWaterfall = ({
   };
 
   // 设置瀑布流内容容器的高度
-  const setContentHeight = () => {
+  const updateContentHeight = () => {
     columnHeightList.current.sort((a, b) => a.height - b.height);
 
     if (contentRef.current) {
@@ -244,7 +278,7 @@ const VirtualWaterfall = ({
 
     domDataList.current = domDataList.current.concat(tempDomDataList);
     // 每次追加完数据后，更新瀑布流容器的高度
-    setContentHeight();
+    updateContentHeight();
   };
 
   // 将750设计稿对应的尺寸转为当前容器视口下的大小
@@ -386,8 +420,8 @@ const VirtualWaterfall = ({
 
       try {
         list = await getList((page.current - 1) * pageSize);
-        if (getDataType(list) === 'array') {
-          hasNextPage.current = !!list.length;
+        if (Array.isArray(list)) {
+          hasNextPage.current = list.length === pageSize;
         }
       } catch (err) {
         console.log(err);
@@ -465,7 +499,7 @@ const VirtualWaterfall = ({
       ref={containerRef}
       className={styles.waterFallContainer}
       style={{
-        height: containerHeight,
+        height: setContainerHeight(),
         padding: `0 ${pxToVW(containerPadding)}`
       }}
     >
@@ -487,15 +521,16 @@ const VirtualWaterfall = ({
   gapY: PropTypes.number,
   pageSize: PropTypes.number,
   columnNumber: PropTypes.number,
-  containerHeight: PropTypes.string,
+  containerHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   containerTop: PropTypes.number,
   containerPadding: PropTypes.number,
   textFont: PropTypes.string,
   loadingBoxHeight: PropTypes.number,
   textBoxParams: PropTypes.object,
   waterfallItemStyle: PropTypes.object,
-  renderContent: PropTypes.func,
-  getList: PropTypes.func
+  getList: PropTypes.func,
+  renderItemContent: PropTypes.func,
+  loadingContent: PropTypes.func
 };*/
 
 export default VirtualWaterfall;
