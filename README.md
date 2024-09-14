@@ -12,14 +12,14 @@ yarn add f-virtual-waterfall-react-rollup
 ## Usage
 ```
 import VirtualWaterfall from 'f-virtual-waterfall-react-rollup';
-import '../dist/main.css';
+import 'f-virtual-waterfall-react-rollup/dist/main.css';
 ```
 
 ```
 // 从后台获取数据
   const getList = (start: number) => {
     return new Promise(resolve => {
-      // 从后台接口获取的数据
+      // 模拟从后台接口获取的数据
       const demoData = [];
       resolve(demoData);
     });
