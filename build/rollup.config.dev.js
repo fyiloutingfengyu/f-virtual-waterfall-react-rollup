@@ -20,6 +20,7 @@ const config = {
     name: 'demoBundle',
     file: './demo/dist/bundle.js',
     format: 'iife',
+    inlineDynamicImports: true, // 内联动态导入
     sourcemap: true
   },
   plugins: [

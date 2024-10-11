@@ -52,6 +52,17 @@ interface RenderMap {
   [key: string | number]: DomeDataItem;
 }
 
+interface TextBoxParams {
+  paddingLeft: number;
+  paddingRight: number;
+  marginTop: number;
+  marginBottom: number;
+  lineHeight: number;
+  maxRows?: number;
+}
+
+type TextBoxParamsKey = keyof TextBoxParams;
+
 // 按750设计稿下的尺寸和字体大小
 const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   gapX = 16, // 两列水平方向的间距
@@ -82,13 +93,14 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
     });
   },
   // 要渲染的内容
+  // todo f 处理 pxToVW 是否要将item 传出去
   renderItemContent = (item: DomeDataItem) => {
     return (
       <>
         <div
           className={styles.imgBox}
           style={{
-            height: pxToVW(item.imgBoxHeight)
+            height: `${item.imgBoxHeight}px`
           }}
         >
           <span className={styles.idx}>{item.index}</span>
@@ -132,7 +144,16 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   // 页面滚动方向，向下为1 (页面底部追加数据 ↓，滚动条向下移动)，向上为 -1（页面顶部追加数据 ↑，滚动条向上移动）
   const scrollDirection = useRef(1);
   // 垂直方向上上次滚动的距离
-  const lastScrollNumY = useRef(0);
+  const lastScrollTop = useRef(0);
+  // 将 textBoxParams 的尺寸转换为当前视口下的尺寸
+  const realTextBoxParams = useRef<TextBoxParams>({
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    lineHeight: 24
+  });
+
   const canvas = document.createElement('canvas');
   const getTextBoxHeightCtx = canvas.getContext('2d');
 
@@ -143,6 +164,17 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    for (const key in realTextBoxParams.current) {
+      if (Object.hasOwn(realTextBoxParams.current, key)) {
+        if (textBoxParams) {
+          realTextBoxParams.current[key as TextBoxParamsKey] =
+            getSizeByViewport(textBoxParams[key as TextBoxParamsKey]);
+        }
+      }
+    }
+  }, [textBoxParams]);
 
   useEffect(() => {
     const containerDom = containerRef.current;
@@ -187,8 +219,12 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   const computedColumnWidth = () => {
     const allGapWidth = gapX * (columnNumber - 1);
 
+    // 使用当前视口的宽高尺寸
+    const containerWidth = containerRef.current?.offsetWidth || 375;
+
     columnWidth.current =
-      (designWidth - allGapWidth - containerPadding * 2) / columnNumber;
+      (containerWidth - getSizeByViewport(allGapWidth + containerPadding * 2)) /
+      columnNumber;
   };
 
   // 初始化每列高度列表
@@ -211,10 +247,10 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
 
     if (contentRef.current) {
       // 瀑布流列表区域的高度为最高的列的高度
-      contentRef.current.style.height = pxToVW(
+      contentRef.current.style.height =
         columnHeightList.current[columnHeightList.current.length - 1].height +
-          loadingBoxHeight
-      );
+        getSizeByViewport(loadingBoxHeight) +
+        'px';
     }
   };
 
@@ -240,38 +276,44 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
         top: 0,
         text: list[i].text,
         textBoxHeight:
-          textBoxParams.lineHeight +
-          textBoxParams.marginTop +
-          textBoxParams.marginBottom
+          realTextBoxParams.current.lineHeight +
+          realTextBoxParams.current.marginTop +
+          realTextBoxParams.current.marginBottom
       };
 
       // 将当前数据放入高度最短的列
       columnHeightList.current.sort((a, b) => a.height - b.height);
 
       item.columnIndex = columnHeightList.current[0].index;
-      item.left = (item.columnIndex - 1) * (gapX + columnWidth.current);
+      item.left =
+        (item.columnIndex - 1) *
+        (getSizeByViewport(gapX) + columnWidth.current);
       item.top = columnHeightList.current[0].height;
 
       let textWidth = 0;
 
       if (getTextBoxHeightCtx) {
-        textWidth = getTextBoxHeightCtx.measureText(item.text).width;
+        textWidth = getSizeByViewport(
+          getTextBoxHeightCtx.measureText(item.text).width
+        );
       }
 
       const rows = Math.ceil(
-        (textWidth + textBoxParams.paddingLeft + textBoxParams.paddingRight) /
-          columnWidth.current
+        textWidth /
+          (columnWidth.current -
+            realTextBoxParams.current.paddingLeft -
+            realTextBoxParams.current.paddingRight)
       );
 
       if (rows >= textBoxParams.maxRows) {
-        item.textBoxHeight =
-          item.textBoxHeight +
-          textBoxParams.lineHeight * (textBoxParams.maxRows - 1);
+        item.textBoxHeight +=
+          realTextBoxParams.current.lineHeight * (textBoxParams.maxRows - 1);
       }
 
       item.height += item.textBoxHeight;
 
-      columnHeightList.current[0].height += item.height + gapY;
+      columnHeightList.current[0].height +=
+        item.height + getSizeByViewport(gapY);
 
       tempDomDataList.push(item);
     }
@@ -295,23 +337,22 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   // 获取当前元素的边界信息
   const getBoundaryInfo = (item: DomeDataItem) => {
     const { top, height } = item;
-    const newContainerOffset = getSizeByViewport(containerOffset);
 
     // 当前元素的底部的位置
-    const y = getSizeByViewport(top + height + containerTop);
+    const y = top + height + getSizeByViewport(containerTop);
 
-    let topLine = -newContainerOffset;
-    let bottomLine = newContainerOffset;
+    let topLine = -containerOffset;
+    let bottomLine = containerOffset;
 
     if (containerRef.current) {
       // 向上扩展半屏
-      topLine = containerRef.current.scrollTop - newContainerOffset;
+      topLine = containerRef.current.scrollTop - containerOffset;
 
       // 向下扩展半屏
       bottomLine =
         containerRef.current.scrollTop +
         containerRef.current.offsetHeight +
-        newContainerOffset;
+        containerOffset;
     }
 
     // 是否在上线之上
@@ -334,9 +375,9 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
         id={`item_${item.index}`}
         key={item.index}
         style={{
-          width: pxToVW(item.width),
-          height: pxToVW(item.height),
-          transform: `translate(${pxToVW(item.left)}, ${pxToVW(item.top)})`,
+          width: `${item.width}px`,
+          height: `${item.height}px`,
+          transform: `translate(${item.left}px, ${item.top}px)`,
           ...waterfallItemStyle
         }}
       >
@@ -395,21 +436,23 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   const handleScroll = throttle(async () => {
     let scrollTop = 0;
     let offsetHeight = 0;
+    let scrollHeight = 0;
 
     if (containerRef.current) {
       scrollTop = containerRef.current.scrollTop;
       offsetHeight = containerRef.current.offsetHeight;
+      scrollHeight = containerRef.current.scrollHeight;
     }
 
-    scrollDirection.current = scrollTop - lastScrollNumY.current > 0 ? 1 : -1;
-    lastScrollNumY.current = scrollTop;
+    scrollDirection.current = scrollTop - lastScrollTop.current > 0 ? 1 : -1;
+    lastScrollTop.current = scrollTop;
 
     updateDomPosition(scrollDirection.current);
 
     if (isLoadingNextPage.current || !hasNextPage.current) return;
 
-    // 当已经展示出来的内容高度大于当前数据内容总高度的85%的时候开始加载新数据
-    if (scrollTop + offsetHeight >= offsetHeight * 0.85) {
+    // 当已经展示出来的内容高度大于当前数据内容总高度的80%的时候开始加载新数据
+    if (scrollTop + offsetHeight >= scrollHeight * 0.8) {
       isLoadingNextPage.current = true;
       setIsShowLoading(true);
 
@@ -444,7 +487,7 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
   const updateDomPosition = (direction: number) => {
     const tempRenderMap: RenderMap = {};
 
-    // 检查现有列表中的元素，不在渲染区域内的元素删除,渲染区域内的保留
+    // 检查当前已经渲染的列表中的元素，不在渲染区域内的元素删除,渲染区域内的保留
     for (let i = startIndex.current; i <= endIndex.current; i++) {
       const { isOverTopLine, isUnderBottomLine } = getBoundaryInfo(
         domDataList.current[i]
