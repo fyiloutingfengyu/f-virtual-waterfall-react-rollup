@@ -93,7 +93,6 @@ const VirtualWaterfall: React.FC<VirtualWaterfallProps> = ({
     });
   },
   // 要渲染的内容
-  // todo f 处理 pxToVW 是否要将item 传出去
   renderItemContent = (item: DomeDataItem) => {
     return (
       <>
